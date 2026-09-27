@@ -529,7 +529,7 @@ function renderSaisie(){
   var tb = el("tbSaisie"), html = "";
   state.eleves.forEach(function(e, idx){
     var opts = function(list, v){ return list.map(function(n){ return '<option value="'+n+'"'+(Number(v)===n?" selected":"")+'>'+n+'</option>'; }).join(""); };
-    html += '<tr data-id="'+e.id+'" class="sx-'+e.sexe+'">'
+    html += '<tr data-id="'+esc(e.id)+'" class="sx-'+e.sexe+'">'
       + '<td class="num">'+(idx+1)+'</td>'
       + '<td><input class="w-mat" data-f="mat" value="'+esc(e.mat)+'" autocomplete="off"></td>'
       + '<td><input data-f="nom" value="'+esc(e.nom)+'" autocomplete="off" placeholder="NOM Prénoms"></td>'
@@ -537,7 +537,7 @@ function renderSaisie(){
       + '<td><select class="w-n" data-f="age"><option value=""'+(e.age==null?" selected":"")+'>—</option>'+opts(AGES, e.age)+'</select></td>'
       + '<td><select class="w-n" data-f="sc">'+opts(SC_CLASSE, e.sc)+'</select></td>'
       + '<td><select class="w-n" data-f="st">'+opts(SC_TOTALE, e.st)+'</select></td>'
-      + '<td style="width:34px;text-align:center"><button class="btn btn-sm btn-ghost no-print" data-del="'+e.id+'" title="Supprimer" aria-label="Supprimer la ligne '+(idx+1)+'">×</button></td>'
+      + '<td style="width:34px;text-align:center"><button class="btn btn-sm btn-ghost no-print" data-del="'+esc(e.id)+'" title="Supprimer" aria-label="Supprimer la ligne '+(idx+1)+'">×</button></td>'
       + '</tr>';
   });
   if(!state.eleves.length) html = '<tr><td colspan="8" style="text-align:center;color:var(--ink3);padding:18px">Aucun élève. Cliquez sur « Ajouter un élève ».</td></tr>';
@@ -976,6 +976,19 @@ function touch(){
 }
 
 /* ---------- interactions ---------- */
+/* Confirmation en deux clics (window.confirm est bloqué dans les vues intégrées) :
+   le premier clic change le libellé, le second dans les 3 s valide. */
+function confirme(btn, libelle){
+  if(btn.hasAttribute("data-arme")){
+    btn.textContent = btn.getAttribute("data-arme"); btn.removeAttribute("data-arme");
+    return true;
+  }
+  btn.setAttribute("data-arme", btn.textContent); btn.textContent = libelle;
+  setTimeout(function(){
+    if(btn.hasAttribute("data-arme")){ btn.textContent = btn.getAttribute("data-arme"); btn.removeAttribute("data-arme"); }
+  }, 3000);
+  return false;
+}
 el("tbSaisie").addEventListener("input", onField);
 el("tbSaisie").addEventListener("change", onField);
 function onField(ev){
@@ -992,6 +1005,8 @@ function onField(ev){
 el("tbSaisie").addEventListener("click", function(ev){
   var b = ev.target.closest("[data-del]"); if(!b) return;
   var id = b.getAttribute("data-del");
+  var cible = state.eleves.filter(function(x){ return x.id === id; })[0];
+  if(cible && cible.nom.trim() && !confirme(b, "Supprimer ?")) return;
   state.eleves = state.eleves.filter(function(x){ return x.id !== id; });
   touch(); renderAll();
 });
@@ -1206,7 +1221,7 @@ if(!dansArtefact) activerBoutons();
 
 /* vue sans capacité (lien partagé en lecture seule) : on le dit clairement */
 setTimeout(function(){
-  if(!telech && !(window.AndroidBridge && window.AndroidBridge.imprimer)){
+  if(dansArtefact && !telech && !(window.AndroidBridge && window.AndroidBridge.imprimer)){
     var n = el("a4Note");
     if(n && n.textContent.indexOf("Aperçu") === 0){
       n.textContent = "Vue en lecture seule : impression et téléchargement y sont bloqués. Ouvrez le registre depuis votre application Claude pour enregistrer la feuille à imprimer.";
