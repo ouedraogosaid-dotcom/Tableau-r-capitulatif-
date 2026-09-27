@@ -284,6 +284,9 @@ thead th{
     <button class="btn btn-ghost is-hidden" id="btnPdf">Feuille à imprimer</button>
     <button class="btn btn-ghost" id="btnPrint">Imprimer</button>
     <button class="btn btn-ghost is-hidden" id="btnCsv">CSV</button>
+    <button class="btn btn-ghost is-hidden" id="btnSauver" title="Enregistrer toute la classe dans un fichier">Sauvegarder</button>
+    <button class="btn btn-ghost" id="btnRestaurer" title="Recharger une classe depuis un fichier de sauvegarde">Restaurer</button>
+    <input type="file" id="fRestaurer" accept=".json,application/json" hidden>
   </div>
 </header>
 
@@ -1192,6 +1195,46 @@ function csv(){
   return "﻿" + L.join("\r\n");
 }
 
+/* ---------- sauvegarde / restauration ---------- */
+var FORMAT = "registre-recapitulatif";
+
+function sauvegarde(){
+  return JSON.stringify({format:FORMAT, version:1, date:new Date().toISOString(), donnees:state}, null, 2);
+}
+
+/* Accepte un fichier de sauvegarde, ou directement l'état brut. */
+function lireSauvegarde(texte){
+  var d = JSON.parse(texte);
+  if(d && d.format === FORMAT && d.donnees) d = d.donnees;
+  if(!d || typeof d !== "object" || !Array.isArray(d.eleves)) throw new Error("format");
+  var n = normalize(d);
+  n.demo = false;
+  return n;
+}
+
+el("btnRestaurer").addEventListener("click", function(){
+  /* remplacer une classe déjà saisie : second clic requis */
+  if(!state.demo && nommes().length && !confirme(this, "Remplacer la classe ?")) return;
+  el("fRestaurer").click();
+});
+el("fRestaurer").addEventListener("change", function(){
+  var f = this.files && this.files[0], inp = this;
+  if(!f) return;
+  var lecteur = new FileReader();
+  lecteur.onload = function(){
+    try{
+      state = lireSauvegarde(String(lecteur.result));
+      clearTimeout(saveTimer); persist(); renderAll();
+      setStatus("Classe restaurée — " + nommes().length + " élève(s)");
+    }catch(e){
+      setStatus("Fichier non reconnu — rien n'a été modifié");
+    }
+    inp.value = "";
+  };
+  lecteur.onerror = function(){ setStatus("Lecture du fichier impossible"); inp.value = ""; };
+  lecteur.readAsText(f);
+});
+
 /* ---------- démarrage ---------- */
 function boot(data){
   state = normalize(data);
@@ -1206,6 +1249,13 @@ function activerBoutons(){
   c.classList.remove("is-hidden");
   c.addEventListener("click", function(){
     sauvegarder(nomFichier("csv"), csv(), "text/csv;charset=utf-8").catch(function(){});
+  });
+  var sv = el("btnSauver");
+  sv.classList.remove("is-hidden");
+  sv.addEventListener("click", function(){
+    sauvegarder(nomFichier("json"), sauvegarde(), "application/json;charset=utf-8").then(function(){
+      setStatus("Sauvegarde enregistrée");
+    }).catch(function(){});
   });
   ["btnPdf","btnPdf2"].forEach(function(id){
     var p = el(id);

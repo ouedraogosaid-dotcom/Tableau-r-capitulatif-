@@ -9,8 +9,9 @@ Tableau récapitulatif de classe pour l'école primaire, sous forme d'applicatio
 - **Alphabétique** : liste générale triée par nom.
 - **Synthèse** : effectifs, redoublants, tableau des âges, contrôles de cohérence, visas.
 - **Feuille A4** : aperçu prêt à imprimer, enregistrement en HTML autonome (impression / PDF) et export CSV (séparateur `;`, compatible Excel).
+- **Sauvegarde / restauration** : « Sauvegarder » enregistre toute la classe dans un fichier `.json` ; « Restaurer » la recharge (changement d'appareil, archivage d'une année). Si une classe est déjà saisie, un second clic est demandé avant de la remplacer.
 
-Les données sont enregistrées automatiquement dans le navigateur (`localStorage`) ; rien n'est envoyé sur un serveur.
+Les données sont enregistrées automatiquement dans le navigateur (`localStorage`) ; rien n'est envoyé sur un serveur. Pensez à faire une sauvegarde régulièrement : vider les données du navigateur efface la classe.
 
 ## Utilisation
 
