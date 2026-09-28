@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#16324F">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Classe vivante</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#FAFAF7; --sheet:#FFFFFF; --sunk:#F1F1EC;
+  --ink:#141E2E; --ink2:#5B6577; --ink3:#8A93A3;
+  --rule:#DCCFAB; --rule-2:#B9A56F; --edge:#E2E1DA;
+  --g:#1B4FA1; --g-bg:rgba(27,79,161,.13); --g-line:rgba(27,79,161,.35);
+  --f:#B31E55; --f-bg:rgba(179,30,85,.12); --f-line:rgba(179,30,85,.33);
+  --ok:#14654A; --warn:#8E5200; --warn-bg:rgba(142,82,0,.10); --bad:#9E2016; --bad-bg:rgba(158,32,22,.10);
+  --gold:#C28A12;
+  --shadow:0 1px 2px rgba(20,30,46,.06), 0 8px 24px -16px rgba(20,30,46,.28);
+  --r:4px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#10141C; --sheet:#171C26; --sunk:#1E2430;
+    --ink:#E8EAEF; --ink2:#A3ACBC; --ink3:#78808F;
+    --rule:#453E2C; --rule-2:#6B5E3C; --edge:#2A3140;
+    --g:#84ABF0; --g-bg:rgba(132,171,240,.16); --g-line:rgba(132,171,240,.4);
+    --f:#F08AB0; --f-bg:rgba(240,138,176,.14); --f-line:rgba(240,138,176,.38);
+    --ok:#4FC79A; --warn:#E0A14A; --warn-bg:rgba(224,161,74,.12); --bad:#F08076; --bad-bg:rgba(240,128,118,.12);
+    --gold:#F2C14E;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 30px -18px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#10141C; --sheet:#171C26; --sunk:#1E2430;
+  --ink:#E8EAEF; --ink2:#A3ACBC; --ink3:#78808F;
+  --rule:#453E2C; --rule-2:#6B5E3C; --edge:#2A3140;
+  --g:#84ABF0; --g-bg:rgba(132,171,240,.16); --g-line:rgba(132,171,240,.4);
+  --f:#F08AB0; --f-bg:rgba(240,138,176,.14); --f-line:rgba(240,138,176,.38);
+  --ok:#4FC79A; --warn:#E0A14A; --warn-bg:rgba(224,161,74,.12); --bad:#F08076; --bad-bg:rgba(240,128,118,.12);
+  --gold:#F2C14E;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 30px -18px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:14px; line-height:1.45; font-variant-numeric:tabular-nums;
+  -webkit-text-size-adjust:100%;
+  display:flex; flex-direction:column; min-height:100dvh;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+h1,.cond,.btn,.seg button,label,.etiquette,.carte-nom{font-family:"Barlow Condensed","IBM Plex Sans",sans-serif}
+h1{margin:0}
+
+/* ---- barre du haut ---- */
+.topbar{border-bottom:1px solid var(--edge); background:var(--paper)}
+.topbar-in{max-width:1400px; margin:0 auto; padding:10px 16px; display:flex; gap:10px 16px; align-items:center; flex-wrap:wrap}
+.brand{display:flex; align-items:baseline; gap:10px; margin-right:auto; min-width:0; flex-wrap:wrap}
+.brand h1{font-weight:700; font-size:22px; letter-spacing:.06em; text-transform:uppercase}
+.brand span{color:var(--ink3); font-size:12.5px; letter-spacing:.03em}
+
+.btn{
+  appearance:none; cursor:pointer; border:1px solid var(--edge); background:var(--sheet); color:var(--ink);
+  font-size:14px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; text-decoration:none;
+  padding:6px 12px; border-radius:var(--r); display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+}
+.btn:hover{border-color:var(--rule-2)}
+.btn-primary{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+.btn-ghost{background:transparent}
+.btn[aria-pressed="true"]{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+.btn:focus-visible,.seg button:focus-visible,.bulle:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--g); outline-offset:2px}
+.btn:disabled{opacity:.5; cursor:default}
+
+/* ---- barre d'outils ---- */
+.outils{max-width:1400px; width:100%; margin:0 auto; padding:10px 16px 0; display:flex; gap:10px 14px; align-items:center; flex-wrap:wrap}
+.seg{display:flex; gap:2px; background:var(--sunk); padding:3px; border-radius:var(--r); flex-wrap:wrap}
+.seg button{
+  appearance:none; border:0; background:transparent; color:var(--ink2); cursor:pointer;
+  font-size:14px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+  padding:6px 11px; border-radius:3px;
+}
+.seg button[aria-pressed="true"]{background:var(--sheet); color:var(--ink); box-shadow:var(--shadow)}
+.grp-opts{display:flex; align-items:center; gap:6px}
+label{font-size:12.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--ink3)}
+select{font:inherit; color:var(--ink); background:var(--sheet); border:1px solid var(--edge); border-radius:var(--r); padding:5px 6px}
+.spacer{flex:1}
+.resume{color:var(--ink2); font-size:13px}
+.resume b{color:var(--ink); font-weight:600}
+
+/* ---- bandeau ---- */
+.bandeau{max-width:1400px; width:calc(100% - 32px); margin:10px auto 0; padding:8px 12px; border-radius:var(--r);
+  background:var(--warn-bg); color:var(--warn); font-size:13px}
+.bandeau a{color:inherit; font-weight:600}
+
+/* ---- scène ---- */
+.scene-wrap{flex:1; display:flex; max-width:1400px; width:100%; margin:0 auto; padding:10px 16px 16px; min-height:420px}
+.scene{
+  position:relative; flex:1; overflow:hidden; border:1px solid var(--edge); border-radius:8px;
+  background:
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink3) 22%, transparent) 1px, transparent 0) 0 0/22px 22px,
+    var(--sheet);
+  transition:background-color .6s, box-shadow .6s;
+  touch-action:manipulation;
+}
+.scene.bruyant{box-shadow:inset 0 0 0 3px var(--bad), inset 0 0 80px -10px var(--bad-bg)}
+.scene.calme{box-shadow:inset 0 0 0 3px color-mix(in srgb, var(--ok) 55%, transparent)}
+
+.bulle{
+  position:absolute; left:0; top:0; border-radius:50%; padding:0; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-family:"Barlow Condensed","IBM Plex Sans",sans-serif; font-weight:700; letter-spacing:.02em;
+  border:2px solid; will-change:transform; user-select:none; -webkit-user-select:none;
+  transition:opacity .35s, filter .35s, box-shadow .2s;
+}
+.bulle.G{background:var(--g-bg); border-color:var(--g-line); color:var(--g)}
+.bulle.F{background:var(--f-bg); border-color:var(--f-line); color:var(--f)}
+.bulle.redo::after{
+  content:""; position:absolute; right:-2px; top:-2px; width:28%; height:28%; border-radius:50%;
+  background:var(--warn); border:2px solid var(--sheet);
+}
+.bulle .nom-court{
+  position:absolute; top:100%; left:50%; transform:translateX(-50%); margin-top:3px;
+  font-family:"IBM Plex Sans",sans-serif; font-weight:500; font-size:11px; letter-spacing:0; color:var(--ink2);
+  white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .2s;
+}
+.scene.noms .bulle .nom-court,.bulle:hover .nom-court,.bulle:focus-visible .nom-court{opacity:1}
+.bulle.vise{box-shadow:0 0 0 4px var(--gold), 0 0 26px 4px color-mix(in srgb, var(--gold) 60%, transparent)}
+.bulle.passe{opacity:.38}
+.scene.tirage .bulle:not(.vise):not(.elu){filter:saturate(.6)}
+.bulle.elu{box-shadow:0 0 0 5px var(--gold), 0 0 40px 10px color-mix(in srgb, var(--gold) 70%, transparent); z-index:5; opacity:1}
+
+.etiquette{
+  position:absolute; transform:translate(-50%,0); pointer-events:none; white-space:nowrap;
+  font-size:15px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink2);
+  transition:left .5s, top .5s, opacity .4s;
+}
+.etiquette small{font-family:"IBM Plex Sans"; font-weight:500; letter-spacing:0; font-size:12px; color:var(--ink3); text-transform:none; margin-left:6px}
+
+canvas.confettis{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:8}
+
+/* ---- carte de l'élu ---- */
+.carte-fond{position:absolute; inset:0; z-index:10; display:flex; align-items:center; justify-content:center; padding:16px;
+  background:color-mix(in srgb, var(--paper) 55%, transparent); backdrop-filter:blur(3px)}
+.carte{
+  background:var(--sheet); border:1px solid var(--edge); border-radius:10px; box-shadow:var(--shadow);
+  padding:22px 26px 18px; text-align:center; max-width:min(560px,100%);
+  animation:pop .5s cubic-bezier(.2,1.4,.4,1);
+}
+@keyframes pop{from{transform:scale(.6); opacity:0} to{transform:none; opacity:1}}
+.carte-sur{font-size:12.5px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--gold)}
+.carte-nom{font-size:clamp(34px,7vw,64px); font-weight:700; line-height:1.02; margin:6px 0 4px; text-wrap:balance}
+.carte-nom.G{color:var(--g)} .carte-nom.F{color:var(--f)}
+.carte-det{color:var(--ink2); font-size:14px; margin-bottom:16px}
+.carte-act{display:flex; gap:8px; justify-content:center; flex-wrap:wrap}
+
+/* ---- bruitomètre ---- */
+.bruit{display:flex; align-items:center; gap:8px}
+.jauge{position:relative; width:130px; height:10px; border-radius:5px; background:var(--sunk); overflow:hidden; border:1px solid var(--edge)}
+.jauge i{position:absolute; left:0; top:0; bottom:0; width:0; background:var(--ok); transition:background-color .3s}
+.jauge i.fort{background:var(--bad)}
+.jauge b{position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--ink)}
+input[type=range]{width:90px; accent-color:var(--ink)}
+
+.aide{max-width:1400px; width:100%; margin:0 auto; padding:0 16px 14px; color:var(--ink3); font-size:12px}
+kbd{font-family:inherit; font-size:11px; border:1px solid var(--edge); border-bottom-width:2px; border-radius:3px; padding:0 4px; color:var(--ink2)}
+
+:fullscreen .aide,:fullscreen .topbar{display:none}
+
+@media (max-width:640px){
+  .brand h1{font-size:19px}
+  .jauge{width:80px}
+  .resume{width:100%}
+}
+@media (prefers-reduced-motion: reduce){
+  .carte{animation:none}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <h1>Classe vivante</h1>
+      <span id="sousTitre">—</span>
+    </div>
+    <a class="btn btn-ghost" href="index.html">← Registre</a>
+    <button class="btn btn-ghost" id="btnSon" aria-pressed="true" title="Activer ou couper les sons">Son</button>
+    <button class="btn btn-ghost" id="btnPlein" title="Plein écran (touche F)">Plein écran</button>
+  </div>
+</header>
+
+<div class="bandeau" id="bandeau" hidden>
+  Classe d'exemple : aucune classe n'est encore saisie sur cet appareil.
+  <a href="index.html">Saisissez vos élèves dans le registre</a> et ils apparaîtront ici.
+</div>
+
+<div class="outils">
+  <div class="seg" id="modes" role="group" aria-label="Regrouper les élèves">
+    <button data-m="tous" aria-pressed="true">Tous</button>
+    <button data-m="sexe" aria-pressed="false">Garçons / Filles</button>
+    <button data-m="age" aria-pressed="false">Âges</button>
+    <button data-m="parcours" aria-pressed="false">Parcours</button>
+    <button data-m="groupes" aria-pressed="false">Groupes</button>
+  </div>
+  <div class="grp-opts" id="grpOpts" hidden>
+    <label for="nbGroupes">Groupes</label>
+    <select id="nbGroupes"></select>
+    <button class="btn btn-ghost" id="btnMelanger" title="Refaire les groupes au hasard">Mélanger</button>
+  </div>
+  <button class="btn btn-ghost" id="btnNoms" aria-pressed="false" title="Afficher les prénoms (touche N)">Prénoms</button>
+  <span class="spacer"></span>
+  <div class="bruit">
+    <button class="btn btn-ghost" id="btnBruit" aria-pressed="false" title="Écouter le niveau sonore de la classe avec le micro">Bruitomètre</button>
+    <span class="jauge" id="jauge" hidden title="Niveau sonore — le trait marque le seuil"><i id="jaugeNiv"></i><b id="jaugeSeuil"></b></span>
+    <input type="range" id="seuil" min="10" max="90" value="55" aria-label="Seuil de bruit" hidden>
+  </div>
+  <button class="btn btn-primary" id="btnTirage" title="Tirer un élève au sort (barre d'espace)">Tirage au sort</button>
+</div>
+
+<div class="outils"><span class="resume" id="resume"></span><span class="spacer"></span><span class="resume" id="resteTirage"></span></div>
+
+<main class="scene-wrap">
+  <div class="scene" id="scene" aria-label="Les élèves de la classe">
+    <canvas class="confettis" id="confettis"></canvas>
+    <div class="carte-fond" id="carteFond" hidden>
+      <div class="carte" role="dialog" aria-modal="true" aria-labelledby="carteNom">
+        <div class="carte-sur" id="carteSur">Au tableau !</div>
+        <div class="carte-nom" id="carteNom"></div>
+        <div class="carte-det" id="carteDet"></div>
+        <div class="carte-act">
+          <button class="btn btn-primary" id="btnEncore">Un autre</button>
+          <button class="btn btn-ghost" id="btnFermer">Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<p class="aide">
+  <kbd>Espace</kbd> tirage au sort · <kbd>N</kbd> prénoms · <kbd>F</kbd> plein écran · <kbd>Échap</kbd> fermer.
+  Le tirage ne choisit pas deux fois le même élève tant que toute la classe n'est pas passée.
+  Le bruitomètre écoute le micro sur cet appareil ; rien n'est enregistré ni envoyé.
+</p>
+
+<script>
+(function(){
+"use strict";
+
+var LS = "tabrecap.v1";               // même clé que le registre
+var LS_TIRAGE = "classevivante.dejaTires";
+
+var DEMO = [
+  ["ABOA Kouassi Joël","G",9,1],["BAMBA Sékou","G",10,2],["COULIBALY Adama","G",9,1],["DIABATÉ Moussa","G",11,2],
+  ["ÉHOUMAN Yao Privat","G",8,1],["FOFANA Ibrahim","G",9,1],["GNAMIEN Koffi Ange","G",10,1],["KOFFI N'Guessan Serge","G",9,1],
+  ["KONÉ Lassina","G",12,3],["N'DRI Kouadio Éric","G",9,1],["OUATTARA Souleymane","G",10,2],["SANOGO Drissa","G",9,1],
+  ["TANOH Amani Prince","G",8,1],["YAO Konan Landry","G",10,1],["ZOUMANA Bakary","G",9,1],
+  ["AKISSI Adjoua Grâce","F",9,1],["BROU Akissi Marie","F",8,1],["CISSÉ Fatoumata","F",10,2],["DAGO Amenan Sarah","F",9,1],
+  ["GBANE Mariam","F",11,2],["KOUAMÉ Affoué Estelle","F",9,1],["KOUASSI Aya Bénédicte","F",8,1],["MEITÉ Aminata","F",10,1],
+  ["N'GUESSAN Ahou Laure","F",9,1],["SILUÉ Awa","F",9,1],["TRAORÉ Salimata","F",10,2],["YOBOUÉ Ama Christelle","F",9,1]
+].map(function(r, i){ return {id:"demo" + i, nom:r[0], sexe:r[1], age:r[2], sc:r[3]}; });
+
+var REDUIT = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function el(id){ return document.getElementById(id); }
+function stocke(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
+function lit(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function melange(a){
+  for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+
+/* ---------- données ---------- */
+var meta = {}, eleves = [], demo = false;
+
+function charger(){
+  var d = null;
+  try{ d = JSON.parse(lit(LS) || "null"); }catch(e){}
+  var liste = d && Array.isArray(d.eleves) ? d.eleves.filter(function(e){ return e && String(e.nom || "").trim(); }) : [];
+  demo = !liste.length || !!(d && d.demo);
+  meta = (!demo && d.meta) || {classe:"CE2", an1:"2026", an2:"2027"};
+  eleves = (demo ? DEMO : liste).map(function(e, i){
+    return {
+      id: String(e.id || "e" + i),
+      nom: String(e.nom).trim().replace(/\s+/g, " "),
+      sexe: e.sexe === "F" ? "F" : "G",
+      age: e.age != null && e.age !== "" && !isNaN(e.age) ? Number(e.age) : null,
+      sc: Number(e.sc) || 1
+    };
+  });
+}
+
+/* « KONÉ Lassina » → nom KONÉ, prénom Lassina, initiales LK */
+function decoupe(nom){
+  var mots = nom.split(" "), i = 0;
+  while(i < mots.length - 1 && mots[i] === mots[i].toUpperCase() && /[A-ZÀ-Ý]/.test(mots[i])) i++;
+  var famille = mots.slice(0, Math.max(i, 1)).join(" ");
+  var prenoms = mots.slice(Math.max(i, 1)).join(" ");
+  var p = prenoms ? prenoms.split(" ")[0] : famille;
+  var ini = (p.charAt(0) + (prenoms ? famille.charAt(0) : (mots[1] || "").charAt(0))).toUpperCase();
+  return {famille:famille, prenoms:prenoms, court:p, ini:ini || "?"};
+}
+
+/* ---------- scène ---------- */
+var scene = el("scene"), W = 0, H = 0, R = 20;
+var noeuds = [], etiquettes = [];
+var mode = lit("classevivante.mode") || "tous";
+var nbGroupes = Number(lit("classevivante.groupes")) || 4;
+var groupesFaits = {};           // id → numéro de groupe
+var agitation = 0;               // 0 calme … 1 très bruyant
+
+function mesurer(){
+  W = scene.clientWidth; H = scene.clientHeight;
+  var n = Math.max(eleves.length, 1);
+  R = Math.max(13, Math.min(40, Math.sqrt(W * H * 0.2 / (n * Math.PI))));
+  noeuds.forEach(function(nd){
+    nd.el.style.width = nd.el.style.height = (2 * R) + "px";
+    nd.el.style.fontSize = Math.round(R * 0.72) + "px";
+  });
+}
+
+function construire(){
+  noeuds.forEach(function(nd){ nd.el.remove(); });
+  var deja = tiresSet();
+  noeuds = eleves.map(function(e){
+    var d = decoupe(e.nom);
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "bulle " + e.sexe + (e.sc > 1 ? " redo" : "") + (deja[e.id] ? " passe" : "");
+    b.title = e.nom + (e.age != null ? " — " + e.age + " ans" : "");
+    b.setAttribute("aria-label", e.nom);
+    b.innerHTML = "<span></span><span class=\"nom-court\"></span>";
+    b.firstChild.textContent = d.ini;
+    b.lastChild.textContent = d.court;
+    b.addEventListener("click", function(){ if(!enTirage) montrerCarte(nd, false); });
+    scene.appendChild(b);
+    var nd = {e:e, d:d, el:b, x:W / 2 + (Math.random() - .5) * W * .6, y:H / 2 + (Math.random() - .5) * H * .6, vx:0, vy:0, tx:W / 2, ty:H / 2};
+    return nd;
+  });
+  mesurer();
+}
+
+/* répartition en k cellules adaptées à la forme de la scène */
+function cellules(k){
+  var cols = Math.max(1, Math.min(k, Math.round(Math.sqrt(k * W / Math.max(H, 1)))));
+  var rows = Math.ceil(k / cols), out = [];
+  cols = Math.ceil(k / rows);                                  // 4 groupes : 2 × 2 plutôt que 3 + 1
+  for(var i = 0; i < k; i++){
+    var r = Math.floor(i / cols), c = i % cols;
+    var dansRang = r === rows - 1 ? k - r * cols : cols;     // centrer le dernier rang
+    var cw = W / cols, off = (W - dansRang * cw) / 2;
+    out.push({x: off + cw * (c + .5), y: H / rows * (r + .5) + 12, top: H / rows * r});
+  }
+  return out;
+}
+
+function faireGroupes(){
+  var g = melange(eleves.filter(function(e){ return e.sexe === "G"; }).slice());
+  var f = melange(eleves.filter(function(e){ return e.sexe === "F"; }).slice());
+  groupesFaits = {};
+  g.concat(f).forEach(function(e, i){ groupesFaits[e.id] = i % nbGroupes; });
+}
+
+function categories(){
+  function par(cle, ordre, libelle){
+    var vus = {};
+    eleves.forEach(function(e){ vus[cle(e)] = true; });
+    return ordre(Object.keys(vus)).map(function(k){
+      return {cle:k, nom:libelle(k), n:eleves.filter(function(e){ return String(cle(e)) === k; }).length};
+    }).map(function(c){ c.test = function(e){ return String(cle(e)) === c.cle; }; return c; });
+  }
+  switch(mode){
+    case "sexe": return par(function(e){ return e.sexe; }, function(k){ return k.sort(); }, function(k){ return k === "G" ? "Garçons" : "Filles"; });
+    case "age": return par(function(e){ return e.age == null ? "?" : e.age; },
+      function(k){ return k.sort(function(a, b){ return (a === "?" ? 99 : +a) - (b === "?" ? 99 : +b); }); },
+      function(k){ return k === "?" ? "Âge inconnu" : k + " ans"; });
+    case "parcours": return par(function(e){ return Math.min(e.sc, 3); }, function(k){ return k.sort(); },
+      function(k){ return ["", "Première année", "Redoublants", "Triplants"][k]; });
+    case "groupes":
+      var out = [];
+      for(var i = 0; i < nbGroupes; i++) out.push({cle:String(i), nom:"Groupe " + (i + 1)});
+      return out.map(function(c){
+        c.test = function(e){ return String(groupesFaits[e.id]) === c.cle; };
+        c.n = eleves.filter(c.test).length; return c;
+      });
+    default: return [{cle:"*", nom:"", n:eleves.length, test:function(){ return true; }}];
+  }
+}
+
+function disposer(){
+  etiquettes.forEach(function(x){ x.remove(); });
+  etiquettes = [];
+  var cats = categories(), cs = cellules(cats.length);
+  cats.forEach(function(c, i){
+    var ce = cs[i];
+    var rayon = (R + 2) * Math.sqrt(c.n / 0.62);
+    noeuds.forEach(function(nd){ if(c.test(nd.e)){ nd.tx = ce.x; nd.ty = ce.y; } });
+    if(c.nom){
+      var lab = document.createElement("div");
+      lab.className = "etiquette";
+      lab.innerHTML = "<span></span><small></small>";
+      lab.firstChild.textContent = c.nom;
+      lab.lastChild.textContent = c.n + (c.n > 1 ? " élèves" : " élève");
+      lab.style.left = ce.x + "px";
+      lab.style.top = Math.max(ce.top + 6, ce.y - rayon - 30) + "px";
+      scene.appendChild(lab);
+      etiquettes.push(lab);
+    }
+  });
+}
+
+/* ---------- physique : ressort vers la cible + collisions ---------- */
+var t0 = performance.now();
+function pas(now){
+  var n = noeuds.length, i, j, a, b, dx, dy, d, min, p;
+  var ressort = 0.014, amorti = 0.86;
+  var bruit = (REDUIT ? 0 : 0.06) + agitation * 2.4;
+  for(i = 0; i < n; i++){
+    a = noeuds[i];
+    var ph = i * 1.7 + now / 900;
+    a.vx = (a.vx + (a.tx - a.x) * ressort + Math.cos(ph) * bruit * 0.5 + (Math.random() - .5) * bruit) * amorti;
+    a.vy = (a.vy + (a.ty - a.y) * ressort + Math.sin(ph * 1.3) * bruit * 0.5 + (Math.random() - .5) * bruit) * amorti;
+    a.x += a.vx; a.y += a.vy;
+  }
+  for(var it = 0; it < 2; it++){
+    for(i = 0; i < n; i++){
+      a = noeuds[i];
+      for(j = i + 1; j < n; j++){
+        b = noeuds[j];
+        dx = b.x - a.x; dy = b.y - a.y; min = 2 * R + 4;
+        if(dx > min || dx < -min || dy > min || dy < -min) continue;
+        d = Math.sqrt(dx * dx + dy * dy) || 0.01;
+        if(d < min){
+          p = (min - d) / 2 / d;
+          a.x -= dx * p; a.y -= dy * p; b.x += dx * p; b.y += dy * p;
+        }
+      }
+    }
+  }
+  for(i = 0; i < n; i++){
+    a = noeuds[i];
+    a.x = Math.max(R + 2, Math.min(W - R - 2, a.x));
+    a.y = Math.max(R + 2, Math.min(H - R - 16, a.y));
+    var s = a.el.classList.contains("elu") ? 1.35 : 1;
+    a.el.style.transform = "translate(" + (a.x - R).toFixed(1) + "px," + (a.y - R).toFixed(1) + "px) scale(" + s + ")";
+  }
+  requestAnimationFrame(pas);
+}
+
+/* ---------- sons (Web Audio, créés au premier geste) ---------- */
+var audio = null, son = lit("classevivante.son") !== "0";
+function ctx(){
+  if(!audio){ try{ audio = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ audio = null; } }
+  if(audio && audio.state === "suspended") audio.resume();
+  return audio;
+}
+function note(freq, debut, duree, vol, type){
+  var c = son && ctx(); if(!c) return;
+  var o = c.createOscillator(), g = c.createGain(), t = c.currentTime + (debut || 0);
+  o.type = type || "sine"; o.frequency.value = freq;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol || 0.12, t + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
+  o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + duree + 0.02);
+}
+function tic(){ note(1320, 0, 0.05, 0.06, "triangle"); }
+function fanfare(){ [523.25, 659.25, 783.99, 1046.5].forEach(function(f, i){ note(f, i * 0.09, 0.5, 0.1, "triangle"); }); }
+
+/* ---------- tirage au sort ---------- */
+var enTirage = false, courant = null;
+
+function tiresSet(){
+  var s = {};
+  try{ (JSON.parse(lit(LS_TIRAGE) || "[]") || []).forEach(function(id){ s[id] = true; }); }catch(e){}
+  return s;
+}
+function majReste(){
+  var deja = tiresSet(), reste = eleves.filter(function(e){ return !deja[e.id]; }).length;
+  el("resteTirage").textContent = reste === eleves.length ? "" :
+    (reste ? reste + " élève" + (reste > 1 ? "s" : "") + " pas encore tiré" + (reste > 1 ? "s" : "") + " · " : "Tout le monde est passé · ");
+  if(reste !== eleves.length){
+    var a = document.createElement("a");
+    a.href = "#"; a.textContent = "recommencer le tour";
+    a.style.color = "inherit";
+    a.addEventListener("click", function(ev){ ev.preventDefault(); stocke(LS_TIRAGE, "[]"); noeuds.forEach(function(nd){ nd.el.classList.remove("passe"); }); majReste(); });
+    el("resteTirage").appendChild(a);
+  }
+}
+
+function tirer(){
+  if(enTirage || !noeuds.length) return;
+  fermerCarte();
+  var deja = tiresSet();
+  var pool = noeuds.filter(function(nd){ return !deja[nd.e.id]; });
+  if(!pool.length){                       // nouveau tour
+    stocke(LS_TIRAGE, "[]"); deja = {};
+    noeuds.forEach(function(nd){ nd.el.classList.remove("passe"); });
+    pool = noeuds.slice();
+  }
+  var gagnant = pool[Math.floor(Math.random() * pool.length)];
+  enTirage = true; scene.classList.add("tirage");
+  el("btnTirage").disabled = true;
+  var delai = REDUIT ? 180 : 45, precedent = null, sauts = 0;
+  (function saut(){
+    if(precedent) precedent.el.classList.remove("vise");
+    var fini = delai > 420 || (REDUIT && sauts > 4);
+    var cible = fini ? gagnant : noeuds[Math.floor(Math.random() * noeuds.length)];
+    if(!fini && cible === precedent && noeuds.length > 1) cible = noeuds[(noeuds.indexOf(cible) + 1) % noeuds.length];
+    cible.el.classList.add("vise"); precedent = cible; sauts++;
+    tic();
+    if(!fini){ delai *= 1.09; setTimeout(saut, delai); return; }
+    setTimeout(function(){
+      cible.el.classList.remove("vise");
+      deja[gagnant.e.id] = true;
+      stocke(LS_TIRAGE, JSON.stringify(Object.keys(deja)));
+      enTirage = false; el("btnTirage").disabled = false;
+      montrerCarte(gagnant, true);
+      majReste();
+    }, 350);
+  })();
+}
+
+function montrerCarte(nd, elu){
+  if(courant) courant.el.classList.remove("elu");
+  courant = nd;
+  nd.el.classList.add("elu");
+  if(elu) nd.el.classList.add("passe");
+  scene.classList.add("tirage");
+  el("carteSur").textContent = elu ? "Au tableau !" : (nd.e.sexe === "F" ? "Élève — fille" : "Élève — garçon");
+  var nomEl = el("carteNom");
+  nomEl.className = "carte-nom " + nd.e.sexe;
+  nomEl.textContent = nd.d.prenoms ? nd.d.prenoms : nd.d.famille;
+  var det = [nd.d.prenoms ? nd.d.famille : ""];
+  if(nd.e.age != null) det.push(nd.e.age + " ans");
+  if(nd.e.sc > 1) det.push(nd.e.sc === 2 ? "redoublant" + (nd.e.sexe === "F" ? "e" : "") : "triplant" + (nd.e.sexe === "F" ? "e" : ""));
+  el("carteDet").textContent = det.filter(Boolean).join(" · ");
+  el("btnEncore").hidden = !elu;
+  el("carteFond").hidden = false;
+  (elu ? el("btnEncore") : el("btnFermer")).focus({preventScroll:true});
+  if(elu){ fanfare(); confettis(); }
+}
+function fermerCarte(){
+  el("carteFond").hidden = true;
+  scene.classList.remove("tirage");
+  if(courant){ courant.el.classList.remove("elu"); courant = null; }
+}
+
+/* ---------- confettis ---------- */
+var cv = el("confettis"), cx = cv.getContext("2d"), parts = [], anime = false;
+function confettis(){
+  if(REDUIT) return;
+  var dpr = window.devicePixelRatio || 1;
+  cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  var st = getComputedStyle(document.documentElement);
+  var couleurs = ["--g", "--f", "--gold", "--ok", "--warn"].map(function(v){ return st.getPropertyValue(v).trim(); });
+  for(var i = 0; i < 160; i++){
+    var ang = -Math.PI / 2 + (Math.random() - .5) * 1.9, v = 7 + Math.random() * 9;
+    parts.push({x:W / 2 + (Math.random() - .5) * 60, y:H * .62, vx:Math.cos(ang) * v, vy:Math.sin(ang) * v,
+      r:Math.random() * Math.PI, vr:(Math.random() - .5) * .35, w:5 + Math.random() * 6, h:3 + Math.random() * 4,
+      c:couleurs[i % couleurs.length], vie:1});
+  }
+  if(!anime){ anime = true; requestAnimationFrame(dessinConfettis); }
+}
+function dessinConfettis(){
+  cx.clearRect(0, 0, W, H);
+  parts = parts.filter(function(p){ return p.vie > 0 && p.y < H + 20; });
+  parts.forEach(function(p){
+    p.vy += 0.28; p.vx *= 0.985; p.vy *= 0.985; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.vie -= 0.006;
+    cx.save(); cx.globalAlpha = Math.max(0, Math.min(1, p.vie * 2)); cx.translate(p.x, p.y); cx.rotate(p.r);
+    cx.fillStyle = p.c; cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.r * 2)) + 1); cx.restore();
+  });
+  if(parts.length) requestAnimationFrame(dessinConfettis);
+  else { anime = false; cx.clearRect(0, 0, W, H); }
+}
+
+/* ---------- bruitomètre ---------- */
+var micro = null, analyseur = null, tampon = null, niveau = 0, bruyantDepuis = 0;
+function seuil(){ return Number(el("seuil").value) / 100; }
+function majSeuil(){ el("jaugeSeuil").style.left = "calc(" + el("seuil").value + "% - 1px)"; stocke("classevivante.seuil", el("seuil").value); }
+
+function demarrerBruit(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    alert("Ce navigateur ne permet pas d'utiliser le micro ici (il faut une page en https)."); return;
+  }
+  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false}}).then(function(flux){
+    var c = ctx(); if(!c) return;
+    micro = {flux:flux, src:c.createMediaStreamSource(flux)};
+    analyseur = c.createAnalyser(); analyseur.fftSize = 1024;
+    tampon = new Float32Array(analyseur.fftSize);
+    micro.src.connect(analyseur);
+    el("btnBruit").setAttribute("aria-pressed", "true");
+    el("jauge").hidden = el("seuil").hidden = false;
+    ecouter();
+  }).catch(function(){
+    alert("Le micro n'a pas été autorisé. Autorisez-le dans les réglages du navigateur pour utiliser le bruitomètre.");
+  });
+}
+function arreterBruit(){
+  if(micro){ micro.flux.getTracks().forEach(function(t){ t.stop(); }); micro.src.disconnect(); }
+  micro = analyseur = null; niveau = 0; agitation = 0;
+  el("btnBruit").setAttribute("aria-pressed", "false");
+  el("jauge").hidden = el("seuil").hidden = true;
+  scene.classList.remove("bruyant", "calme");
+}
+function ecouter(){
+  if(!analyseur) return;
+  if(analyseur.getFloatTimeDomainData) analyseur.getFloatTimeDomainData(tampon);
+  var s = 0; for(var i = 0; i < tampon.length; i++) s += tampon[i] * tampon[i];
+  var db = 20 * Math.log10(Math.sqrt(s / tampon.length) || 1e-6);
+  var brut = Math.max(0, Math.min(1, (db + 62) / 52));             // −62 dB … −10 dB → 0 … 1
+  niveau += (brut - niveau) * (brut > niveau ? 0.25 : 0.05);         // monte vite, redescend doucement
+  var fort = niveau > seuil();
+  var j = el("jaugeNiv"); j.style.width = (niveau * 100).toFixed(1) + "%"; j.classList.toggle("fort", fort);
+  var cible = fort ? Math.min(1, 0.35 + (niveau - seuil()) * 3) : 0;
+  agitation += (cible - agitation) * 0.08;
+  var now = performance.now();
+  if(fort){ bruyantDepuis = now; scene.classList.add("bruyant"); scene.classList.remove("calme"); }
+  else if(now - bruyantDepuis > 1500){ scene.classList.remove("bruyant"); scene.classList.toggle("calme", now - bruyantDepuis > 8000 && bruyantDepuis > 0); }
+  requestAnimationFrame(ecouter);
+}
+
+/* ---------- interface ---------- */
+function resume(){
+  var g = eleves.filter(function(e){ return e.sexe === "G"; }).length, f = eleves.length - g;
+  var ages = eleves.filter(function(e){ return e.age != null; }).map(function(e){ return e.age; });
+  var moy = ages.length ? (ages.reduce(function(a, b){ return a + b; }, 0) / ages.length) : null;
+  var redo = eleves.filter(function(e){ return e.sc > 1; }).length;
+  el("resume").innerHTML = "<b>" + eleves.length + "</b> élèves · <b>" + g + "</b> garçons · <b>" + f + "</b> filles"
+    + (moy != null ? " · âge moyen <b>" + moy.toFixed(1).replace(".", ",") + "</b> ans" : "")
+    + (redo ? " · <b>" + redo + "</b> redoublant" + (redo > 1 ? "s" : "") + " (point orange)" : "");
+  var t = [meta.classe, meta.ecole, (meta.an1 && meta.an2) ? meta.an1 + "–" + meta.an2 : ""].filter(Boolean);
+  el("sousTitre").textContent = t.join(" · ") || "Ma classe";
+  el("bandeau").hidden = !demo;
+}
+
+function choisirMode(m){
+  mode = m; stocke("classevivante.mode", m);
+  Array.prototype.forEach.call(el("modes").children, function(b){ b.setAttribute("aria-pressed", String(b.dataset.m === m)); });
+  el("grpOpts").hidden = m !== "groupes";
+  if(m === "groupes" && !Object.keys(groupesFaits).length) faireGroupes();
+  disposer();
+}
+
+function initGroupesSelect(){
+  var s = el("nbGroupes"), max = Math.max(2, Math.min(10, Math.floor(eleves.length / 2)));
+  s.innerHTML = "";
+  for(var k = 2; k <= max; k++){
+    var o = document.createElement("option"); o.value = k;
+    var taille = Math.floor(eleves.length / k);
+    o.textContent = k + " (" + taille + (eleves.length % k ? "–" + (taille + 1) : "") + " élèves)";
+    s.appendChild(o);
+  }
+  nbGroupes = Math.min(Math.max(nbGroupes, 2), max);
+  s.value = nbGroupes;
+}
+
+function tout(){
+  charger(); construire(); resume(); initGroupesSelect();
+  groupesFaits = {}; choisirMode(mode); majReste();
+}
+
+el("modes").addEventListener("click", function(ev){ var b = ev.target.closest("button"); if(b) choisirMode(b.dataset.m); });
+el("nbGroupes").addEventListener("change", function(){ nbGroupes = Number(this.value); stocke("classevivante.groupes", nbGroupes); faireGroupes(); disposer(); });
+el("btnMelanger").addEventListener("click", function(){ faireGroupes(); disposer(); noeuds.forEach(function(nd){ nd.vx += (Math.random() - .5) * 30; nd.vy += (Math.random() - .5) * 30; }); });
+el("btnTirage").addEventListener("click", function(){ ctx(); tirer(); });
+el("btnEncore").addEventListener("click", tirer);
+el("btnFermer").addEventListener("click", fermerCarte);
+el("carteFond").addEventListener("click", function(ev){ if(ev.target === this) fermerCarte(); });
+el("btnNoms").addEventListener("click", function(){
+  var on = scene.classList.toggle("noms"); this.setAttribute("aria-pressed", String(on)); stocke("classevivante.noms", on ? "1" : "0");
+});
+el("btnSon").setAttribute("aria-pressed", String(son));
+el("btnSon").addEventListener("click", function(){ son = !son; this.setAttribute("aria-pressed", String(son)); stocke("classevivante.son", son ? "1" : "0"); if(son) tic(); });
+el("btnBruit").addEventListener("click", function(){ if(analyseur) arreterBruit(); else demarrerBruit(); });
+el("seuil").value = lit("classevivante.seuil") || 55;
+el("seuil").addEventListener("input", majSeuil);
+majSeuil();
+
+var btnPlein = el("btnPlein");
+if(!document.documentElement.requestFullscreen) btnPlein.hidden = true;
+function pleinEcran(){
+  if(document.fullscreenElement) document.exitFullscreen();
+  else if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){});
+}
+btnPlein.addEventListener("click", pleinEcran);
+
+document.addEventListener("keydown", function(ev){
+  if(ev.target.closest && ev.target.closest("select,input,textarea")) return;
+  if(ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  if(ev.key === " " || ev.key === "Spacebar"){
+    if(ev.target.tagName === "BUTTON" && !ev.target.classList.contains("bulle")) return;   // l'espace active déjà ce bouton
+    ev.preventDefault(); ctx(); tirer();
+  }
+  else if(ev.key === "Escape") fermerCarte();
+  else if(ev.key === "n" || ev.key === "N") el("btnNoms").click();
+  else if(ev.key === "f" || ev.key === "F") pleinEcran();
+});
+
+var attente = null;
+function redim(){ clearTimeout(attente); attente = setTimeout(function(){ mesurer(); disposer(); }, 80); }
+window.addEventListener("resize", redim);
+document.addEventListener("fullscreenchange", redim);
+window.addEventListener("storage", function(ev){ if(ev.key === LS) tout(); });
+
+if(lit("classevivante.noms") === "1"){ scene.classList.add("noms"); el("btnNoms").setAttribute("aria-pressed", "true"); }
+
+tout();
+requestAnimationFrame(pas);
+})();
+</script>
+</body>
+</html>
