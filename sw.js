@@ -1,8 +1,8 @@
 /* Registre récapitulatif — cache hors ligne
    - pages (navigation) : réseau d'abord, cache en secours → les mises à jour arrivent sans changer CACHE ;
    - autres fichiers : cache d'abord, rafraîchi en arrière-plan. */
-var CACHE = "registre-v7";
-var FICHIERS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png"];
+var CACHE = "registre-v8";
+var FICHIERS = ["./", "./index.html", "./classe.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png"];
 
 self.addEventListener("install", function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(FICHIERS); }).then(function(){ return self.skipWaiting(); }));
